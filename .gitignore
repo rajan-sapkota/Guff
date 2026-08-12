@@ -1,0 +1,17 @@
+# Dependencies and generated builds
+node_modules/
+dist/
+build/
+test-results/
+playwright-report/
+
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+
+# Logs and editor/system files
+*.log
+.DS_Store
+.vscode/
+.idea/

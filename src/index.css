@@ -1,0 +1,826 @@
+:root {
+  /* Apple HIG & Liquid Glass Palette */
+  --apple-bg-dark: #000000;
+  --apple-card-dark: rgba(28, 28, 30, 0.6);
+  --apple-glass-dark: rgba(255, 255, 255, 0.06);
+  --apple-glass-border-dark: rgba(255, 255, 255, 0.08);
+  
+  --apple-bg-light: #f2f2f7;
+  --apple-card-light: rgba(255, 255, 255, 0.75);
+  --apple-glass-light: rgba(255, 255, 255, 0.65);
+  --apple-glass-border-light: rgba(0, 0, 0, 0.06);
+
+  /* Primary Brand & Soft Apple Gradients */
+  --apple-blue: #0A84FF;
+  --apple-blue-glow: rgba(10, 132, 255, 0.35);
+  --apple-green: #30D158;
+  --apple-purple: #BF5AF2;
+  --apple-orange: #FF9F0A;
+  --apple-pink: #FF375F;
+  --apple-cyan: #64D2FF;
+
+  --text-primary-dark: #ffffff;
+  --text-secondary-dark: rgba(255, 255, 255, 0.55);
+  --text-tertiary-dark: rgba(255, 255, 255, 0.35);
+
+  /* Design Tokens - 8px Spacing Grid System */
+  --space-8: 8px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-64: 64px;
+
+  --radius-xs: 10px;
+  --radius-sm: 14px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-xl: 32px;
+  --radius-pill: 9999px;
+
+  /* Ambient Floating Shadows */
+  --shadow-floating: 0 20px 50px rgba(0, 0, 0, 0.45);
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.25);
+  --shadow-glow: 0 0 30px rgba(10, 132, 255, 0.35);
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Outfit', 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 0;
+}
+
+img,
+video,
+canvas {
+  max-width: 100%;
+}
+
+body {
+  background-color: var(--apple-bg-dark);
+  color: var(--text-primary-dark);
+  font-family: var(--font-family);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.015em;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* App Viewport Container */
+.app-viewport {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background: 
+    radial-gradient(circle at 10% 10%, rgba(10, 132, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 90% 90%, rgba(191, 90, 242, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255, 55, 95, 0.08) 0%, transparent 60%),
+    var(--apple-bg-dark);
+}
+
+/* iOS Native Elastic Screen Transition Animation (<=300ms) */
+.ios-page-transition {
+  animation: iosScreenEnter 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  will-change: transform, opacity;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes iosScreenEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* iMessage Message Spring Entrance Animation (<=300ms) */
+@keyframes messageEnter {
+  0% { opacity: 0; transform: translateY(14px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-message-enter {
+  animation: messageEnter 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Reaction Picker Slide-Up Entrance Animation */
+@keyframes reactionPickerEnter {
+  0% { opacity: 0; transform: translateY(6px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-reaction-picker-enter {
+  animation: reactionPickerEnter 220ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* List Item Entrance Animation (Fade and Slide) */
+@keyframes listSlide {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-list-item {
+  animation: listSlide 250ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Smooth Pulsing Typing Indicator Dots */
+@keyframes typingPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+.typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0A84FF;
+  display: inline-block;
+  animation: typingPulse 1.2s infinite ease-in-out;
+}
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Micro-Animations for Feed Interactions (<=320ms) */
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.animate-like-pop {
+  animation: heartPop 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes commentSlideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-comment-slide {
+  animation: commentSlideDown 280ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes shareBounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(0.88); }
+  70% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+.animate-share-bounce {
+  animation: shareBounce 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes menuScale {
+  0% { opacity: 0; transform: scale(0.92); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Frosted Glass Floating Card Surface with Hover Lift & Spring Transition */
+.glass-surface {
+  background: var(--apple-card-dark);
+  backdrop-filter: blur(35px);
+  -webkit-backdrop-filter: blur(35px);
+  border: 1px solid var(--apple-glass-border-dark);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-floating);
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 300ms ease, box-shadow 300ms ease;
+}
+
+.glass-surface:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-4px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+}
+
+/* Liquid Glass Floating Mobile Navigation Bar */
+.liquid-glass-nav-mobile {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 88%;
+  max-width: 480px;
+  height: 72px;
+  border-radius: 36px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 24px;
+  z-index: 9999;
+}
+
+/* Liquid Glass Tab Button */
+.liquid-tab-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary-dark);
+  cursor: pointer;
+  transition: all 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.liquid-tab-btn.active {
+  color: var(--apple-blue);
+  transform: scale(1.15);
+}
+
+.liquid-tab-btn.active::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--apple-blue-glow) 0%, transparent 70%);
+}
+
+/* Floating Action / Pill Buttons with 0.97 Active Scale */
+.apple-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1), background 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
+  outline: none;
+}
+
+.apple-btn svg {
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.apple-btn:hover svg {
+  transform: scale(1.12);
+}
+
+.apple-btn:active {
+  transform: scale(0.97) !important;
+}
+
+.apple-btn-primary {
+  background: linear-gradient(135deg, var(--apple-blue), var(--apple-cyan));
+  color: #ffffff;
+  box-shadow: 0 8px 25px rgba(10, 132, 255, 0.4);
+}
+
+.apple-btn-glass {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-primary-dark);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.apple-btn-glass:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+/* Form Inputs & Controls */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary-dark);
+  letter-spacing: 0.02em;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 0.95rem;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  outline: none;
+  transition: border-color 250ms ease, background 250ms ease, box-shadow 250ms ease;
+}
+
+.form-input:focus {
+  border-color: var(--apple-blue);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 0 20px rgba(10, 132, 255, 0.35);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-admin {
+  background: linear-gradient(135deg, rgba(255, 159, 10, 0.25), rgba(255, 55, 95, 0.25));
+  color: #FF9F0A;
+  border: 1px solid rgba(255, 159, 10, 0.4);
+}
+
+/* Modal Overlay & Dialog Base with Blur & Scale Animation (<=300ms) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(35px);
+  -webkit-backdrop-filter: blur(35px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  animation: fadeIn 250ms ease;
+}
+
+.modal-content {
+  animation: menuScale 280ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  will-change: transform, opacity;
+}
+
+/* Close controls stay compact and visually distinct from primary actions. */
+.modal-content .apple-btn[style*="height"] {
+  min-height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+}
+
+.modal-content .apple-btn[style*="height"]:hover {
+  background: rgba(255, 55, 95, 0.18);
+  border-color: rgba(255, 55, 95, 0.5);
+}
+
+/* A dialog owns the screen; its controls must never compete with the mobile nav. */
+body:has(.modal-overlay) .liquid-glass-nav-mobile {
+  display: none !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Desktop Responsive Grid Rules: Left 220px | Center Feed ~700px | Right 300px */
+.desktop-app-grid {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 700px) 300px;
+  justify-content: center;
+  gap: 32px;
+  max-width: 1320px;
+  margin: 0 auto;
+  width: 100%;
+  height: calc(100vh - 56px);
+  padding: 24px 32px;
+  min-height: 0;
+}
+
+.desktop-app-grid > *,
+.ios-page-transition,
+.ios-page-transition > * {
+  min-width: 0;
+}
+
+.app-brand-logo,
+.desktop-brand-logo {
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10px;
+}
+
+.map-modal-content {
+  background: rgba(10, 14, 24, 0.98);
+  border: 1px solid rgba(100, 210, 255, 0.16);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.65);
+}
+
+.map-modal-header {
+  background: linear-gradient(135deg, rgba(10, 132, 255, 0.14), rgba(191, 90, 242, 0.08)) !important;
+}
+
+.map-modal-close {
+  width: 36px;
+  height: 36px;
+  min-height: 0;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.map-search-panel {
+  background: rgba(18, 24, 36, 0.82) !important;
+}
+
+.map-results-label {
+  color: var(--text-secondary-dark) !important;
+  letter-spacing: 0.08em;
+}
+
+.map-spot-card {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.map-spot-card:hover,
+.map-spot-card.is-selected {
+  transform: translateX(2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.map-canvas {
+  background: radial-gradient(circle at 70% 20%, rgba(10, 132, 255, 0.12), transparent 42%), #0b1220;
+  min-width: 0;
+  min-height: 0;
+}
+
+.app-brand-logo {
+  width: 112px;
+  height: 34px;
+}
+
+.desktop-brand-logo {
+  width: 172px;
+  height: 58px;
+  border-radius: 14px;
+}
+
+.mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 1024px) {
+  .desktop-app-grid {
+    grid-template-columns: 80px minmax(0, 700px);
+    gap: 24px;
+    padding: 16px 24px;
+  }
+  .desktop-right-panel {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only {
+    display: flex !important;
+  }
+  .desktop-app-grid {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    height: calc(100dvh - 56px);
+    min-height: 0;
+  }
+
+  .liquid-glass-nav-mobile {
+    bottom: max(16px, env(safe-area-inset-bottom));
+    width: min(88%, 480px);
+    padding: 0 12px;
+    display: grid !important;
+    justify-items: center;
+  }
+
+  .liquid-tab-btn {
+    width: 44px;
+    height: 44px;
+    flex: 0 1 52px;
+  }
+
+  .feed-view {
+    padding: 16px 20px !important;
+    padding-bottom: 104px !important;
+  }
+
+  .feed-title-bar {
+    gap: 12px;
+    margin-bottom: 20px !important;
+    padding-bottom: 12px !important;
+  }
+
+  .feed-title-copy {
+    min-width: 0;
+  }
+
+  .feed-title-copy h2 {
+    font-size: 1.25rem !important;
+    gap: 8px !important;
+    line-height: 1.1;
+  }
+
+  .feed-title-copy h2 svg {
+    flex-shrink: 0;
+    width: 22px;
+  }
+
+  .feed-title-copy p {
+    font-size: 0.75rem !important;
+    line-height: 1.2;
+  }
+
+  .feed-create-button {
+    flex: 0 0 84px;
+    min-height: 50px;
+    padding: 8px 10px !important;
+    gap: 4px !important;
+    font-size: 0.76rem !important;
+    line-height: 1.05;
+    white-space: normal;
+  }
+
+  .feed-create-button svg {
+    width: 16px;
+    flex-shrink: 0;
+  }
+
+  .feed-card {
+    padding: 20px !important;
+    border-radius: 22px !important;
+  }
+
+  .feed-action-bar {
+    gap: 8px !important;
+    justify-content: stretch;
+  }
+
+  .feed-action-button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 8px 6px !important;
+    gap: 5px !important;
+    font-size: 0.76rem !important;
+    white-space: nowrap;
+  }
+
+  .feed-action-button svg {
+    width: 16px;
+    flex-shrink: 0;
+  }
+
+  .create-post-actions {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 12px;
+  }
+
+  .create-post-attachments {
+    flex-wrap: wrap;
+  }
+
+  .create-post-attachments .apple-btn {
+    flex: 1 1 auto;
+    min-height: 40px;
+    padding: 8px 10px !important;
+  }
+
+  .create-post-publish {
+    width: 100%;
+    min-height: 46px;
+    justify-content: center;
+  }
+
+  .app-header {
+    padding: 0 12px !important;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .app-header-brand,
+  .app-header-actions {
+    min-width: 0;
+  }
+
+  .app-header-actions {
+    gap: 8px !important;
+    flex-shrink: 0;
+  }
+
+  .app-header-toast {
+    position: fixed;
+    top: 64px;
+    left: 12px;
+    right: 12px;
+    justify-content: center;
+    max-width: none;
+    z-index: 101;
+    text-align: center;
+  }
+
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 12px;
+  }
+
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: calc(100dvh - 24px) !important;
+    overflow: auto !important;
+  }
+
+  .map-modal-content {
+    height: min(85dvh, 720px) !important;
+  }
+
+  .map-modal-header {
+    padding: 14px 16px !important;
+  }
+
+  .map-modal-header h3 {
+    font-size: 1rem !important;
+  }
+
+  .map-modal-header p {
+    display: none;
+  }
+
+  .map-modal-close {
+    flex-shrink: 0;
+  }
+
+  .map-modal-body {
+    flex-direction: column !important;
+    min-height: 0;
+  }
+
+  .map-search-panel {
+    width: 100% !important;
+    max-height: 38%;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .map-search-box {
+    padding: 10px 12px !important;
+  }
+
+  .map-results {
+    padding-bottom: 8px !important;
+  }
+
+  .map-pin-details {
+    display: none;
+  }
+
+  .map-selected-spot {
+    bottom: 12px !important;
+    left: 12px !important;
+    right: 12px !important;
+    padding: 12px !important;
+    align-items: stretch !important;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .map-selected-copy {
+    min-width: 0;
+  }
+
+  .map-selected-copy > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .map-attach-button {
+    width: 100%;
+    min-height: 42px;
+  }
+
+  .profile-details-header {
+    gap: 12px;
+  }
+
+  .profile-details-header h2 {
+    font-size: 1.25rem !important;
+    overflow-wrap: anywhere;
+  }
+
+  .profile-details-header .apple-btn {
+    flex-shrink: 0;
+    padding: 8px 12px !important;
+  }
+
+  .profile-stats {
+    gap: 12px !important;
+    justify-content: space-between;
+  }
+
+  .profile-stats > div {
+    min-width: 0;
+  }
+
+  .profile-stats span:last-child {
+    display: block;
+    margin-left: 0 !important;
+  }
+
+  .suggested-person-row {
+    gap: 10px;
+  }
+
+  .suggested-person-row > div:first-child,
+  .suggested-person-row > div:first-child > div {
+    min-width: 0;
+  }
+
+  .suggested-person-row > div:first-child > div > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .suggested-person-row .apple-btn {
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 390px) {
+  .liquid-glass-nav-mobile {
+    width: calc(100% - 20px);
+  }
+
+  .header-sign-in {
+    padding: 6px 8px !important;
+    font-size: 0.72rem !important;
+  }
+
+  .feed-view {
+    padding-inline: 16px !important;
+  }
+
+  .feed-title-copy p {
+    display: none;
+  }
+
+  .feed-action-button span {
+    font-size: 0;
+  }
+
+  .feed-action-button span::first-letter {
+    font-size: 0.76rem;
+  }
+
+  .feed-action-button:last-child span {
+    font-size: 0.76rem;
+  }
+}
+
+/* Custom Momentum Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}

@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // User profile access control
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // Real-time messages rules
+    match /messages/{messageId} {
+      allow read, write: if true;
+    }
+
+    // Social feeds rules
+    match /feeds/{feedId} {
+      allow read, write: if true;
+    }
+  }
+}
