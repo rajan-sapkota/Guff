@@ -4,6 +4,7 @@ import { firebaseService } from "../../firebase/firebaseService";
 import { MessageInput } from "./MessageInput";
 import { LocationCard } from "./LocationCard";
 import { MessageInfoModal } from "./MessageInfoModal";
+import { getGuffAssistantReply } from "../../utils/guffAssistant";
 import { 
   Hash, 
   Sparkles, 
@@ -36,6 +37,13 @@ import {
   Trash2,
   Plus
 } from "lucide-react";
+
+const assistantUser = {
+  id: "guff-assistant",
+  name: "Guff Assistant",
+  avatar: "",
+  role: "assistant"
+};
 
 export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, onStartAudioCall, pendingMedia, setPendingMedia, pendingLocation, setPendingLocation }) => {
   const {
@@ -145,6 +153,21 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, onStartA
     setTimeout(() => setIsTyping(false), 1200);
 
     await firebaseService.sendMessage(payload);
+
+    if (activeChannel === `guff_assistant_${currentUser.id}` && text.trim()) {
+      window.setTimeout(() => {
+        firebaseService.sendMessage({
+          channelId: activeChannel,
+          senderId: assistantUser.id,
+          senderName: assistantUser.name,
+          senderAvatar: "",
+          senderRole: "assistant",
+          text: getGuffAssistantReply(text),
+          type: "text",
+          status: "delivered"
+        });
+      }, 450);
+    }
   };
 
   const handleChannelSelect = (channelId) => {
@@ -218,6 +241,7 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, onStartA
   };
 
   const getChannelDisplayName = () => {
+    if (activeChannel === `guff_assistant_${currentUser?.id}`) return assistantUser.name;
     if (activeChannel.includes("_dm_")) {
       const parts = activeChannel.split("_dm_");
       const otherUserId = parts.find(id => id !== currentUser?.id) || parts[0];
@@ -228,6 +252,7 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, onStartA
   };
 
   const getOtherUser = () => {
+    if (activeChannel === `guff_assistant_${currentUser?.id}`) return assistantUser;
     if (activeChannel.includes("_dm_")) {
       const parts = activeChannel.split("_dm_");
       const otherUserId = parts.find(id => id !== currentUser?.id) || parts[0];
@@ -310,6 +335,15 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, onStartA
           </div>
 
           <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+            <button
+              onClick={() => handleChannelSelect(`guff_assistant_${currentUser?.id}`)}
+              className={`apple-btn chat-dm-row ${activeChannel === `guff_assistant_${currentUser?.id}` ? "apple-btn-primary" : "apple-btn-glass"}`}
+              style={{ justifyContent: "flex-start", width: "100%", padding: "10px 12px", fontSize: "0.82rem", borderColor: "rgba(191, 90, 242, 0.55)" }}
+            >
+              <span className="guff-assistant-avatar"><Sparkles size={16} /></span>
+              <span style={{ flex: 1, textAlign: "left", fontWeight: 800 }}>Guff Assistant</span>
+              <span className="guff-assistant-free-label">FREE</span>
+            </button>
             {allUsers.filter(u => u.id !== currentUser?.id).map((u) => {
               const dmChannelId = [currentUser?.id, u.id].sort().join("_dm_");
               const isActive = activeChannel === dmChannelId;
@@ -374,11 +408,15 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, onStartA
 
             {otherUser ? (
               <div style={{ position: "relative" }}>
-                <img
-                  src={otherUser.avatar}
-                  alt={otherUser.name}
-                  style={{ width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover" }}
-                />
+                {otherUser.id === assistantUser.id ? (
+                  <div className="guff-assistant-avatar" style={{ width: "38px", height: "38px" }}><Sparkles size={20} /></div>
+                ) : (
+                  <img
+                    src={otherUser.avatar}
+                    alt={otherUser.name}
+                    style={{ width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover" }}
+                  />
+                )}
                 <span style={{ position: "absolute", bottom: 0, right: 0, width: "10px", height: "10px", borderRadius: "50%", background: "#30D158", border: "2px solid #000" }} />
               </div>
             ) : (
@@ -402,7 +440,7 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, onStartA
               </h2>
               <p style={{ fontSize: "0.75rem", color: "#30D158", display: "flex", alignItems: "center", gap: "4px" }}>
                 <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#30D158" }}></span>
-                {otherUser ? "Active now • Last seen 2m ago" : "Live stream connected"}
+                {otherUser?.id === assistantUser.id ? "Built-in help • Always available" : otherUser ? "Active now • Last seen 2m ago" : "Live stream connected"}
               </p>
             </div>
           </div>
@@ -430,9 +468,9 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, onStartA
             </button>
 
             <button 
-              onClick={() => otherUser ? onStartAudioCall(otherUser) : showToast("Open a direct message to start an audio call.", "info")}
+              onClick={() => otherUser && otherUser.id !== assistantUser.id ? onStartAudioCall(otherUser) : showToast("Audio calls are available in member direct messages.", "info")}
               className="apple-btn apple-btn-glass"
-              style={{ width: "36px", height: "36px", padding: 0, opacity: otherUser ? 1 : 0.45 }}
+              style={{ width: "36px", height: "36px", padding: 0, opacity: otherUser && otherUser.id !== assistantUser.id ? 1 : 0.45 }}
               title="Start Audio Call"
             >
               <Phone size={16} color="#30D158" />
