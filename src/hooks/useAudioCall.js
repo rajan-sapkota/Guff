@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { callService } from "../firebase/callService";
 
 const iceServers = [{ urls: "stun:stun.l.google.com:19302" }];
+const serializeDescription = ({ type, sdp }) => ({ type, sdp });
 
 export const useAudioCall = (currentUser, showToast) => {
   const [call, setCall] = useState(null);
@@ -58,15 +59,23 @@ export const useAudioCall = (currentUser, showToast) => {
       localStream.getTracks().forEach((track) => peerConnection.addTrack(track, localStream));
       peerConnection.ontrack = (event) => setRemoteStream(event.streams[0]);
 
+      let callId = null;
+      const pendingCandidates = [];
+      peerConnection.onicecandidate = (event) => {
+        if (!event.candidate) return;
+        if (callId) {
+          callService.addIceCandidate(callId, "caller", event.candidate);
+        } else {
+          pendingCandidates.push(event.candidate);
+        }
+      };
+
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
-      const callId = await callService.createCall({ caller: currentUser, recipient, offer: offer.toJSON() });
+      callId = await callService.createCall({ caller: currentUser, recipient, offer: serializeDescription(offer) });
+      pendingCandidates.forEach((candidate) => callService.addIceCandidate(callId, "caller", candidate));
       callRef.current = callId;
       setCall({ id: callId, recipient, phase: "calling", outgoing: true });
-
-      peerConnection.onicecandidate = (event) => {
-        if (event.candidate) callService.addIceCandidate(callId, "caller", event.candidate);
-      };
 
       unsubscribeRef.current.push(
         callService.listenToCall(callId, async (updatedCall) => {
@@ -104,7 +113,7 @@ export const useAudioCall = (currentUser, showToast) => {
       await peerConnection.setRemoteDescription(new RTCSessionDescription(call.offer));
       const answer = await peerConnection.createAnswer();
       await peerConnection.setLocalDescription(answer);
-      await callService.updateCall(call.id, { answer: answer.toJSON(), status: "accepted" });
+      await callService.updateCall(call.id, { answer: serializeDescription(answer), status: "accepted" });
       setCall((current) => current ? { ...current, phase: "connected" } : current);
     } catch (error) {
       cleanUpConnection();

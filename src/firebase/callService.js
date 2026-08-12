@@ -39,7 +39,15 @@ export const callService = {
 
   async addIceCandidate(callId, role, candidate) {
     requireFirestore();
-    await addDoc(collection(db, "calls", callId, `${role}Candidates`), candidate.toJSON());
+    const serializedCandidate = typeof candidate.toJSON === "function"
+      ? candidate.toJSON()
+      : {
+          candidate: candidate.candidate,
+          sdpMid: candidate.sdpMid,
+          sdpMLineIndex: candidate.sdpMLineIndex,
+          usernameFragment: candidate.usernameFragment
+        };
+    await addDoc(collection(db, "calls", callId, `${role}Candidates`), serializedCandidate);
   },
 
   listenToCall(callId, callback) {
