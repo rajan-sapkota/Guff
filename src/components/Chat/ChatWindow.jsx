@@ -37,7 +37,7 @@ import {
   Plus
 } from "lucide-react";
 
-export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, pendingMedia, setPendingMedia, pendingLocation, setPendingLocation }) => {
+export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, onStartAudioCall, pendingMedia, setPendingMedia, pendingLocation, setPendingLocation }) => {
   const {
     currentUser,
     activeChannel,
@@ -430,9 +430,9 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, pendingM
             </button>
 
             <button 
-              onClick={() => showToast("Audio call initiated 📞", "info")}
+              onClick={() => otherUser ? onStartAudioCall(otherUser) : showToast("Open a direct message to start an audio call.", "info")}
               className="apple-btn apple-btn-glass"
-              style={{ width: "36px", height: "36px", padding: 0 }}
+              style={{ width: "36px", height: "36px", padding: 0, opacity: otherUser ? 1 : 0.45 }}
               title="Start Audio Call"
             >
               <Phone size={16} color="#30D158" />

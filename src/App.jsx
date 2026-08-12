@@ -12,7 +12,9 @@ import { LiveMapModal } from "./components/Map/LiveMapModal";
 import { CameraModal } from "./components/Camera/CameraModal";
 import { CreatePostModal } from "./components/Feed/CreatePostModal";
 import { AuthModal } from "./components/AuthModal";
+import { AudioCallOverlay } from "./components/Chat/AudioCallOverlay";
 import { firebaseService } from "./firebase/firebaseService";
+import { useAudioCall } from "./hooks/useAudioCall";
 
 const AppContent = () => {
   const { currentUser, activeTab, isAuthModalOpen, setIsAuthModalOpen, showToast } = useAuth();
@@ -23,6 +25,7 @@ const AppContent = () => {
 
   const [pendingMedia, setPendingMedia] = useState(null);
   const [pendingLocation, setPendingLocation] = useState(null);
+  const audioCall = useAudioCall(currentUser, showToast);
 
   const handleCameraCapture = (imageDataUrl) => {
     setPendingMedia(imageDataUrl);
@@ -100,6 +103,7 @@ const AppContent = () => {
 
             {activeTab === "chat" && (
               <ChatWindow
+                onStartAudioCall={audioCall.startAudioCall}
                 onOpenCamera={() => setIsCameraOpen(true)}
                 onOpenMap={() => setIsMapOpen(true)}
                 onSelectLocation={(loc) => {
@@ -167,6 +171,16 @@ const AppContent = () => {
       <AuthModal 
         isOpen={isAuthModalOpen} 
         onClose={() => setIsAuthModalOpen(false)} 
+      />
+
+      <AudioCallOverlay
+        call={audioCall.call}
+        remoteStream={audioCall.remoteStream}
+        isMuted={audioCall.isMuted}
+        onAccept={audioCall.acceptAudioCall}
+        onDecline={audioCall.endAudioCall}
+        onEnd={audioCall.endAudioCall}
+        onToggleMute={audioCall.toggleMute}
       />
 
       <CameraModal
