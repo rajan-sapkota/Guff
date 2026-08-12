@@ -4,6 +4,7 @@ dist/
 build/
 test-results/
 playwright-report/
+.firebase/
 
 # Environment and local configuration
 .env
