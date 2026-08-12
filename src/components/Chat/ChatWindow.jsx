@@ -803,7 +803,7 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, pendingM
         />
 
         {/* Message Input Bar */}
-        <div style={{ flexShrink: 0 }}>
+        <div className="chat-message-composer" style={{ flexShrink: 0 }}>
           <MessageInput 
             onSendMessage={handleSendMessage} 
             onOpenCamera={onOpenCamera}

@@ -533,6 +533,11 @@ body:has(.modal-overlay) .liquid-glass-nav-mobile {
     flex: 0 1 52px;
   }
 
+  /* Keep the chat composer clear of the fixed floating navigation bar. */
+  .chat-message-composer {
+    padding-bottom: calc(104px + env(safe-area-inset-bottom));
+  }
+
   .feed-view {
     padding: 16px 20px !important;
     padding-bottom: 104px !important;
