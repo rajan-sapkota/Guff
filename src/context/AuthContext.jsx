@@ -143,6 +143,31 @@ export const AuthProvider = ({ children }) => {
   };
 
   const unreadNotificationCount = notifications.filter(n => !n.read).length;
+  const unreadDirectMessageNotifications = notifications.filter(
+    (notification) => !notification.read && notification.notificationType === "direct_message"
+  );
+  const unreadMessageSenderIds = [...new Set(
+    unreadDirectMessageNotifications.map((notification) => notification.actorId).filter(Boolean)
+  )];
+
+  const markDirectMessageNotificationsAsRead = async (channelId) => {
+    const matchingNotifications = notifications.filter(
+      (notification) => !notification.read
+        && notification.notificationType === "direct_message"
+        && notification.targetId === channelId
+    );
+
+    if (!matchingNotifications.length) return;
+
+    const notificationIds = new Set(matchingNotifications.map((notification) => notification.id));
+    setNotifications((current) => current.map((notification) => (
+      notificationIds.has(notification.id) ? { ...notification, read: true } : notification
+    )));
+
+    await Promise.all(matchingNotifications.map((notification) => (
+      firebaseService.markNotificationAsRead(notification.id)
+    )));
+  };
 
   return (
     <AuthContext.Provider
@@ -163,6 +188,10 @@ export const AuthProvider = ({ children }) => {
         toggleFollow,
         notifications,
         unreadNotificationCount,
+        unreadDirectMessageNotifications,
+        unreadMessageSenderIds,
+        unreadMessageSenderCount: unreadMessageSenderIds.length,
+        markDirectMessageNotificationsAsRead,
         loginGoogle,
         loginManual,
         logout

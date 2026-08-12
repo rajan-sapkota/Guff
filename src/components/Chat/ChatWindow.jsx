@@ -38,7 +38,16 @@ import {
 } from "lucide-react";
 
 export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, pendingMedia, setPendingMedia, pendingLocation, setPendingLocation }) => {
-  const { currentUser, activeChannel, setActiveChannel, showToast, setIsAuthModalOpen } = useAuth();
+  const {
+    currentUser,
+    activeChannel,
+    setActiveChannel,
+    showToast,
+    setIsAuthModalOpen,
+    unreadMessageSenderIds,
+    unreadDirectMessageNotifications,
+    markDirectMessageNotificationsAsRead
+  } = useAuth();
   const [messages, setMessages] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -91,6 +100,9 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, pendingM
   useEffect(() => {
     if (currentUser && activeChannel) {
       firebaseService.markChannelMessagesAsRead(activeChannel, currentUser.id);
+      if (activeChannel.includes("_dm_")) {
+        markDirectMessageNotificationsAsRead(activeChannel);
+      }
     }
   }, [activeChannel, messages, currentUser]);
 
@@ -237,7 +249,7 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, pendingM
       {/* Channels & Direct Messages Left Sidebar Drawer */}
       {isSidebarOpen && (
         <div 
-          className="glass-surface" 
+          className="glass-surface chat-channel-drawer"
           style={{
             width: "240px",
             display: "flex",
@@ -301,11 +313,15 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, pendingM
             {allUsers.filter(u => u.id !== currentUser?.id).map((u) => {
               const dmChannelId = [currentUser?.id, u.id].sort().join("_dm_");
               const isActive = activeChannel === dmChannelId;
+              const unreadCount = unreadDirectMessageNotifications.filter(
+                (notification) => notification.actorId === u.id && notification.targetId === dmChannelId
+              ).length;
+              const hasUnreadMessages = unreadMessageSenderIds.includes(u.id) && unreadCount > 0;
               return (
                 <button
                   key={u.id}
                   onClick={() => handleChannelSelect(dmChannelId)}
-                  className={`apple-btn ${isActive ? 'apple-btn-primary' : 'apple-btn-glass'}`}
+                  className={`apple-btn chat-dm-row ${isActive ? 'apple-btn-primary' : 'apple-btn-glass'} ${hasUnreadMessages ? 'has-unread-messages' : ''}`}
                   style={{
                     justifyContent: "flex-start",
                     width: "100%",
@@ -317,7 +333,12 @@ export const ChatWindow = ({ onOpenCamera, onOpenMap, onSelectLocation, pendingM
                     <img src={u.avatar} alt={u.name} style={{ width: "26px", height: "26px", borderRadius: "50%", objectFit: "cover" }} />
                     <span style={{ position: "absolute", bottom: 0, right: 0, width: "8px", height: "8px", borderRadius: "50%", background: "#30D158", border: "1px solid #000" }} />
                   </div>
-                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{u.name}</span>
+                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, textAlign: "left" }}>{u.name}</span>
+                  {hasUnreadMessages && (
+                    <span className="chat-dm-new-badge" aria-label={`${unreadCount} unread messages`}>
+                      New {unreadCount > 99 ? "99+" : unreadCount}
+                    </span>
+                  )}
                 </button>
               );
             })}

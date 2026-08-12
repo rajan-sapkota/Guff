@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 export const LiquidGlassNavbar = ({ onOpenCreatePost }) => {
-  const { currentUser, activeTab, requireAuthForTab, setIsAuthModalOpen, logout } = useAuth();
+  const { currentUser, activeTab, requireAuthForTab, setIsAuthModalOpen, logout, unreadMessageSenderCount } = useAuth();
   const [scrollOffset, setScrollOffset] = useState(0);
 
   useEffect(() => {
@@ -184,14 +184,21 @@ export const LiquidGlassNavbar = ({ onOpenCreatePost }) => {
                 zIndex: 2
               }}
             >
-              <IconComp 
-                size={24} 
-                style={{
-                  transform: isActive ? "scale(1.22)" : "scale(1)",
-                  transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s ease",
-                  filter: isActive ? "drop-shadow(0 0 8px rgba(10, 132, 255, 0.8))" : "none"
-                }}
-              />
+              <span style={{ position: "relative", display: "inline-flex" }}>
+                <IconComp
+                  size={24}
+                  style={{
+                    transform: isActive ? "scale(1.22)" : "scale(1)",
+                    transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s ease",
+                    filter: isActive ? "drop-shadow(0 0 8px rgba(10, 132, 255, 0.8))" : "none"
+                  }}
+                />
+                {item.id === "chat" && unreadMessageSenderCount > 0 && (
+                  <span className="message-unread-count" aria-label={`${unreadMessageSenderCount} people have unread messages`}>
+                    {unreadMessageSenderCount > 99 ? "99+" : unreadMessageSenderCount}
+                  </span>
+                )}
+              </span>
             </button>
           );
         })}
